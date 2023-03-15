@@ -1,4 +1,4 @@
-package br.ce.wcaquino.entidades;
+package tiduswr.entidades;
 
 public class Usuario {
 

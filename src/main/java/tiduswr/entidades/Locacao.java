@@ -1,4 +1,4 @@
-package br.ce.wcaquino.entidades;
+package tiduswr.entidades;
 
 import java.util.Date;
 
