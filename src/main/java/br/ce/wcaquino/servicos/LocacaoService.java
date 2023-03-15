@@ -8,8 +8,8 @@ import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.utils.DataUtils;
-
-import javax.xml.crypto.Data;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class LocacaoService {
 	
@@ -32,6 +32,11 @@ public class LocacaoService {
 	}
 
 	public static void main(String[] args) {
+
+	}
+
+	@Test
+	public void teste() {
 		//cenario
 		LocacaoService locacaoService = new LocacaoService();
 		Usuario usuario = new Usuario("HARLLEM");
@@ -41,8 +46,8 @@ public class LocacaoService {
 		Locacao locacao = locacaoService.alugarFilme(usuario, filme);
 
 		//verificacao
-		System.out.println(locacao.getValor() == 5.0);
-		System.out.println(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
-		System.out.println(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
+		Assert.assertEquals(5.0, locacao.getValor(), 0.0);
+		Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
+		Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
 	}
 }
