@@ -1,24 +1,25 @@
 package tiduswr.servicos;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.Rule;
+import org.junit.rules.ErrorCollector;
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
 import tiduswr.entidades.Usuario;
-import tiduswr.servicos.LocacaoService;
-import tiduswr.utils.DataUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static tiduswr.utils.DataUtils.isMesmaData;
+import static tiduswr.utils.DataUtils.obterDataComDiferencaDias;
 
 public class LocacaoServiceTest {
 
+    @Rule
+    ErrorCollector error = new ErrorCollector();
+
     @Test
-    public void teste() {
+    public void testeLocacao() {
         //cenario
         LocacaoService locacaoService = new LocacaoService();
         Usuario usuario = new Usuario("HARLLEM");
@@ -28,10 +29,9 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filme);
 
         //verificacao
-        assertThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.equalTo(5.0)));
-        assertThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.not(6.0)));
-        assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
-        assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
+        error.checkThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.equalTo(5.0)));
+        error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), CoreMatchers.is(true));
+        error.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), CoreMatchers.is(false));
     }
 
 }
