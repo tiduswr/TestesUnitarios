@@ -1,5 +1,6 @@
 package tiduswr.servicos;
 
+import org.hamcrest.CoreMatchers;
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
 import tiduswr.entidades.Usuario;
@@ -9,6 +10,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LocacaoServiceTest {
 
@@ -23,9 +28,10 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filme);
 
         //verificacao
-        Assert.assertEquals(5.0, locacao.getValor(), 0.01);
-        Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
-        Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
+        assertThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.equalTo(5.0)));
+        assertThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.not(6.0)));
+        assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
+        assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
     }
 
 }
