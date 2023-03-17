@@ -5,15 +5,17 @@ import java.util.Date;
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
 import tiduswr.entidades.Usuario;
+import tiduswr.exceptions.FilmeSemEstoqueException;
+import tiduswr.exceptions.LocadoraException;
 import tiduswr.utils.DataUtils;
 
 public class LocacaoService {
 	
-	public Locacao alugarFilme(Usuario usuario, Filme filme) throws Exception {
+	public Locacao alugarFilme(Usuario usuario, Filme filme) throws FilmeSemEstoqueException, LocadoraException {
 
-		if(filme.getEstoque() == 0){
-			throw new Exception("Filme sem estoque!");
-		}
+		if(usuario == null) throw new LocadoraException("Usuário Vázio!");
+		if(filme == null) throw new LocadoraException("Filme vázio!");
+		if(filme.getEstoque() == 0) throw new FilmeSemEstoqueException("Filme sem estoque!");
 
 		Locacao locacao = new Locacao();
 		locacao.setFilme(filme);
