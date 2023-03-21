@@ -1,5 +1,6 @@
 package tiduswr.servicos;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -26,14 +27,30 @@ public class LocacaoService {
 		locacao.setFilmes(filmes);
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(new Date());
-		Double valorTotalLocacao = filmes.stream()
-				.map(Filme::getPrecoLocacao)
-				.reduce(0.0, Double::sum);
+
+		double valorTotalLocacao = 0.0;
+		double descontoMaximo = 0.0;
+		for (int i = 0; i < filmes.size(); i++) {
+			Filme filme = filmes.get(i);
+			double preco = filme.getPrecoLocacao();
+
+			if(i >= 2 && i <= 5){
+				double filmesComDesconto = i - 1;
+				descontoMaximo = 0.25 * filmesComDesconto;
+			}
+
+			double precoComDesconto = preco - (preco * descontoMaximo);
+			valorTotalLocacao += precoComDesconto;
+		}
 		locacao.setValor(valorTotalLocacao);
 
-		//Entrega no dia seguinte
+		//Entrega no dia util seguinte
 		Date dataEntrega = new Date();
+		System.out.println(dataEntrega);
 		dataEntrega = DataUtils.adicionarDias(dataEntrega, 1);
+		if(DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)){
+			dataEntrega = DataUtils.adicionarDias(dataEntrega,1);
+		}
 		locacao.setDataRetorno(dataEntrega);
 		
 		//Salvando a locacao...	
