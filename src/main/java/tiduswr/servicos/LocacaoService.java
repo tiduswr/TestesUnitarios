@@ -46,7 +46,6 @@ public class LocacaoService {
 
 		//Entrega no dia util seguinte
 		Date dataEntrega = new Date();
-		System.out.println(dataEntrega);
 		dataEntrega = DataUtils.adicionarDias(dataEntrega, 1);
 		if(DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)){
 			dataEntrega = DataUtils.adicionarDias(dataEntrega,1);

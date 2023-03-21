@@ -33,7 +33,11 @@ public class LocacaoServiceTest {
     }
 
     @Test
+    //@Ignore
     public void deveAlugarFilme() throws Exception{
+        //Não Executa no sbado
+        Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+
         //cenario
         Usuario usuario = new Usuario("HARLLEM");
         List<Filme> filmes = List.of(new Filme("MATRIX",2,7.0),
@@ -149,7 +153,11 @@ public class LocacaoServiceTest {
     }
 
     @Test
+    //@Ignore
     public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
+        //Só executa no sábado
+        Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+
         //cenario
         Usuario usuario = new Usuario("Harllem");
         List<Filme> filmes = List.of(new Filme("MATRIX",2,4.0));
