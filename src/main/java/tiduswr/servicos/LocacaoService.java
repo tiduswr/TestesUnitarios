@@ -1,6 +1,7 @@
 package tiduswr.servicos;
 
 import java.util.Date;
+import java.util.List;
 
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
@@ -11,17 +12,24 @@ import tiduswr.utils.DataUtils;
 
 public class LocacaoService {
 	
-	public Locacao alugarFilme(Usuario usuario, Filme filme) throws FilmeSemEstoqueException, LocadoraException {
+	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 
 		if(usuario == null) throw new LocadoraException("Usuário Vázio!");
-		if(filme == null) throw new LocadoraException("Filme vázio!");
-		if(filme.getEstoque() == 0) throw new FilmeSemEstoqueException("Filme sem estoque!");
+		if(filmes == null || filmes.isEmpty()) throw new LocadoraException("Filme vázio!");
+		boolean anyFilmeWithoutEstoque = filmes.stream()
+				.map(Filme::getEstoque)
+				.anyMatch(e -> e == 0);
+		if(anyFilmeWithoutEstoque)
+			throw new FilmeSemEstoqueException("Filme sem estoque!");
 
 		Locacao locacao = new Locacao();
-		locacao.setFilme(filme);
+		locacao.setFilmes(filmes);
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(new Date());
-		locacao.setValor(filme.getPrecoLocacao());
+		Double valorTotalLocacao = filmes.stream()
+				.map(Filme::getPrecoLocacao)
+				.reduce(0.0, Double::sum);
+		locacao.setValor(valorTotalLocacao);
 
 		//Entrega no dia seguinte
 		Date dataEntrega = new Date();
