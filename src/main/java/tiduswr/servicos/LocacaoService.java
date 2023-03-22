@@ -29,8 +29,9 @@ public class LocacaoService {
 		locacao.setDataLocacao(new Date());
 
 		double valorTotalLocacao = 0.0;
-		double descontoMaximo = 0.0;
+		double descontoMaximo;
 		for (int i = 0; i < filmes.size(); i++) {
+			descontoMaximo = 0.0;
 			Filme filme = filmes.get(i);
 			double preco = filme.getPrecoLocacao();
 
