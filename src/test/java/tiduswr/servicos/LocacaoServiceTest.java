@@ -15,6 +15,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static tiduswr.matchers.MatchersProprios.caiEmUmaSegunda;
 import static tiduswr.utils.DataUtils.isMesmaData;
 import static tiduswr.utils.DataUtils.obterDataComDiferencaDias;
 
@@ -96,9 +98,7 @@ public class LocacaoServiceTest {
         Locacao resultado = locacaoService.alugarFilme(usuario, filmes);
 
         //verificacao
-        System.out.println(resultado.getDataRetorno());
-        boolean isSegunda = DataUtils.verificarDiaSemana(resultado.getDataRetorno(), Calendar.MONDAY);
-        Assert.assertTrue(isSegunda);
+        assertThat(resultado.getDataRetorno(), caiEmUmaSegunda());
     }
 
 }
