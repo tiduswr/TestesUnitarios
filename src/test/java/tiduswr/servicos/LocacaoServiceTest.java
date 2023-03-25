@@ -15,8 +15,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static tiduswr.matchers.MatchersProprios.caiEmUmaSegunda;
+import static tiduswr.matchers.MatchersProprios.*;
 import static tiduswr.utils.DataUtils.isMesmaData;
 import static tiduswr.utils.DataUtils.obterDataComDiferencaDias;
 
@@ -49,9 +50,9 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
         //verificacao
-        error.checkThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.equalTo(11.0)));
-        error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), CoreMatchers.is(true));
-        error.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), CoreMatchers.is(true));
+        error.checkThat(locacao.getValor(), is(equalTo(11.0)));
+        error.checkThat(locacao.getDataLocacao(), isHoje());
+        error.checkThat(locacao.getDataRetorno(), isHojePlusDays(1));
     }
 
     @Test(expected = FilmeSemEstoqueException.class)
