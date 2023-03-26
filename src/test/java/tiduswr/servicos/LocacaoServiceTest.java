@@ -16,13 +16,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static tiduswr.builder.FilmeBuilder.umFilme;
 import static tiduswr.builder.FilmeBuilder.umFilmeSemEstoque;
-import static tiduswr.builder.UsuarioBuilder.*;
+import static tiduswr.builder.LocacaoBuilder.umaLocacao;
+import static tiduswr.builder.UsuarioBuilder.umUsuario;
 import static tiduswr.matchers.MatchersProprios.*;
 
 //Para definir ordem nos testes(Não recomendado pois quebra a letra I do principio FIRST)
@@ -32,6 +34,7 @@ public class LocacaoServiceTest {
     private LocacaoService locacaoService;
     private SpcService spcService;
     private LocacaoDAO locacaoDAO;
+    private EmailService emailService;
 
     @Rule
     public ErrorCollector error = new ErrorCollector();
@@ -39,10 +42,12 @@ public class LocacaoServiceTest {
     @Before
     public void setup(){
         locacaoService = new LocacaoService();
-        locacaoDAO = Mockito.mock(LocacaoDAO.class);
+        locacaoDAO = mock(LocacaoDAO.class);
         locacaoService.setLocacaoDAO(locacaoDAO);
-        spcService = Mockito.mock(SpcService.class);
+        spcService = mock(SpcService.class);
         locacaoService.setSpcService(spcService);
+        emailService = mock(EmailService.class);
+        locacaoService.setEmailService(emailService);
     }
 
     @Test
@@ -112,11 +117,47 @@ public class LocacaoServiceTest {
         //cenario
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(umFilme().agora());
-        when(spcService.possuiNegativacao(usuario)).thenReturn(true);
+        when(spcService.possuiNegativacao(any(Usuario.class))).thenReturn(true);
 
         //acao
         assertThrows(LocadoraException.class,
                 () -> locacaoService.alugarFilme(usuario, filmes));
+
+        //verificacao
+        verify(spcService).possuiNegativacao(usuario);
+    }
+
+    @Test
+    public void deveEnviarEmailParaLocacoesAtrasadas(){
+        //cenario
+        Usuario usuario = umUsuario().agora();
+        Usuario usuario2 = umUsuario().comNome("Usuario 2").agora();
+        Usuario usuario3 = umUsuario().comNome("Usuario 3").agora();
+
+        List<Locacao> locacoes = List.of(
+                umaLocacao().atrasado().comUsuario(usuario).agora(),
+                umaLocacao().comUsuario(usuario2).agora(),
+                umaLocacao().atrasado().comUsuario(usuario3).agora(),
+                umaLocacao().atrasado().comUsuario(usuario3).agora());
+        when(locacaoDAO.obterLocacoesPendentes()).thenReturn(locacoes);
+
+        //acao
+        locacaoService.notificarAtrasos();
+
+        //verificacao
+        verify(emailService).notificarAtraso(usuario);
+
+        verify(emailService, times(3)).notificarAtraso(any(Usuario.class));
+        verify(emailService, atLeast(2)).notificarAtraso(usuario3);
+
+        //Garantir que o email não foi enviado para o usuario 2
+        verify(emailService, never()).notificarAtraso(usuario2);
+
+        //Garantir que não foi enviado nenhum outro email alem dos 3
+        verifyNoMoreInteractions(emailService);
+
+        //Garantir que não usado o serviço abaixo(não tem haver com o código, é só uma curiosidade)
+        verifyNoInteractions(spcService);
     }
 
 }
