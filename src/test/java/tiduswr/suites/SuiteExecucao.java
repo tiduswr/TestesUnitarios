@@ -6,7 +6,7 @@ import tiduswr.servicos.CalculadoraTest;
 import tiduswr.servicos.CalculoValorLocacaoTest;
 import tiduswr.servicos.LocacaoServiceTest;
 
-@RunWith(Suite.class)
+//@RunWith(Suite.class)
 @Suite.SuiteClasses({
         CalculadoraTest.class,
         CalculoValorLocacaoTest.class,

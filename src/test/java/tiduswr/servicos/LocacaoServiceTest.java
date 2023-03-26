@@ -1,6 +1,5 @@
 package tiduswr.servicos;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.*;
 import org.junit.rules.ErrorCollector;
 import org.junit.runners.MethodSorters;
@@ -17,9 +16,10 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static tiduswr.builder.FilmeBuilder.umFilme;
+import static tiduswr.builder.FilmeBuilder.umFilmeSemEstoque;
+import static tiduswr.builder.UsuarioBuilder.*;
 import static tiduswr.matchers.MatchersProprios.*;
-import static tiduswr.utils.DataUtils.isMesmaData;
-import static tiduswr.utils.DataUtils.obterDataComDiferencaDias;
 
 //Para definir ordem nos testes(Não recomendado pois quebra a letra I do principio FIRST)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -42,15 +42,14 @@ public class LocacaoServiceTest {
         Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
         //cenario
-        Usuario usuario = new Usuario("HARLLEM");
-        List<Filme> filmes = List.of(new Filme("MATRIX",2,7.0),
-                new Filme("SHREK",4,4.0));
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = List.of(umFilme().comValor(5.0).agora());
 
         //acao
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
         //verificacao
-        error.checkThat(locacao.getValor(), is(equalTo(11.0)));
+        error.checkThat(locacao.getValor(), is(equalTo(5.0)));
         error.checkThat(locacao.getDataLocacao(), isHoje());
         error.checkThat(locacao.getDataRetorno(), isHojePlusDays(1));
     }
@@ -58,10 +57,8 @@ public class LocacaoServiceTest {
     @Test(expected = FilmeSemEstoqueException.class)
     public void deveLancarExcecaoAoAlugarFilmeSemEstoque() throws Exception{
         //cenario
-        Usuario usuario = new Usuario("HARLLEM");
-        List<Filme> filmes = List.of(new Filme("MATRIX",2,7.0),
-                new Filme("SHREK",0,4.0),
-                new Filme("AUTO DA COMPADECIDA",3,5.0));
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = List.of(umFilmeSemEstoque().agora());
 
         //acao
         locacaoService.alugarFilme(usuario, filmes);
@@ -70,9 +67,7 @@ public class LocacaoServiceTest {
     @Test
     public void naoDeveAlugarFilmeSemUsuario(){
         //cenario
-        List<Filme> filmes = List.of(new Filme("MATRIX",2,7.0),
-                new Filme("SHREK",4,4.0),
-                new Filme("AUTO DA COMPADECIDA",3,5.0));
+        List<Filme> filmes = List.of(umFilme().agora());
 
         Assert.assertThrows("Usuário Vázio!", LocadoraException.class, () -> locacaoService.alugarFilme(null, filmes));
     }
@@ -80,7 +75,7 @@ public class LocacaoServiceTest {
     @Test
     public void naoDeveAlugarFilmeSemFilme(){
         //cenario
-        Usuario usuario = new Usuario("HARLLEM");
+        Usuario usuario = umUsuario().agora();
 
         Assert.assertThrows("Filme vázio!", LocadoraException.class, () -> locacaoService.alugarFilme(usuario, null));
     }
@@ -92,8 +87,8 @@ public class LocacaoServiceTest {
         Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
         //cenario
-        Usuario usuario = new Usuario("Harllem");
-        List<Filme> filmes = List.of(new Filme("MATRIX",2,4.0));
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = List.of(umFilme().agora());
 
         //acao
         Locacao resultado = locacaoService.alugarFilme(usuario, filmes);

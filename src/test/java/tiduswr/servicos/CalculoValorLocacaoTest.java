@@ -15,6 +15,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static tiduswr.builder.FilmeBuilder.umFilme;
+import static tiduswr.builder.UsuarioBuilder.umUsuario;
+
 @RunWith(Parameterized.class)
 public class CalculoValorLocacaoTest {
 
@@ -30,13 +33,13 @@ public class CalculoValorLocacaoTest {
     public String nomeTeste;
 
     //Amostras
-    public static final Filme FILME1 = new Filme("MATRIX",2,4.0);
-    public static final Filme FILME2 = new Filme("SHREK",4,4.0);
-    public static final Filme FILME3 = new Filme("AUTO DA COMPADECIDA",3,4.0);
-    public static final Filme FILME4 = new Filme("DUMB GUYS",5,4.0);
-    public static final Filme FILME5 = new Filme("A CULPA É DAS ESTRELAS",7,4.0);
-    public static final Filme FILME6 = new Filme("MAIS QUE AMIGOS, FRIENDS",10,4.0);
-    public static final Filme FILME7 = new Filme("BREAKING BAD 2 - O RETORNO DE FLYNN",13,4.0);
+    public static final Filme FILME1 = umFilme().agora();
+    public static final Filme FILME2 = umFilme().agora();
+    public static final Filme FILME3 = umFilme().agora();
+    public static final Filme FILME4 = umFilme().agora();
+    public static final Filme FILME5 = umFilme().agora();
+    public static final Filme FILME6 = umFilme().agora();
+    public static final Filme FILME7 = umFilme().agora();
 
     @Before
     public void setup(){
@@ -58,7 +61,7 @@ public class CalculoValorLocacaoTest {
     @Test
     public void devePagarFilmeComDesconto() throws FilmeSemEstoqueException, LocadoraException {
         //cenario
-        Usuario usuario = new Usuario("HARLLEM");
+        Usuario usuario = umUsuario().agora();
 
         //acao
         Locacao resultado = locacaoService.alugarFilme(usuario, filmes);
