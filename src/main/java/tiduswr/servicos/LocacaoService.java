@@ -15,6 +15,7 @@ import tiduswr.utils.DataUtils;
 public class LocacaoService {
 
 	private LocacaoDAO locacaoDAO;
+	private SpcService spcService;
 
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 
@@ -25,6 +26,8 @@ public class LocacaoService {
 				.anyMatch(e -> e == 0);
 		if(anyFilmeWithoutEstoque)
 			throw new FilmeSemEstoqueException("Filme sem estoque!");
+		if(spcService.possuiNegativacao(usuario))
+			throw new LocadoraException("Usuario Negativado!");
 
 		Locacao locacao = new Locacao();
 		locacao.setFilmes(filmes);
@@ -65,4 +68,9 @@ public class LocacaoService {
 	public void setLocacaoDAO(LocacaoDAO locacaoDAO){
 		this.locacaoDAO = locacaoDAO;
 	}
+
+	public void setSpcService(SpcService spcService){
+		this.spcService = spcService;
+	}
+
 }

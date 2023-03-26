@@ -5,7 +5,6 @@ import org.junit.rules.ErrorCollector;
 import org.junit.runners.MethodSorters;
 import org.mockito.Mockito;
 import tiduswr.daos.LocacaoDAO;
-import tiduswr.daos.LocacaoDaoFake;
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
 import tiduswr.entidades.Usuario;
@@ -19,6 +18,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.when;
 import static tiduswr.builder.FilmeBuilder.umFilme;
 import static tiduswr.builder.FilmeBuilder.umFilmeSemEstoque;
 import static tiduswr.builder.UsuarioBuilder.*;
@@ -29,6 +30,8 @@ import static tiduswr.matchers.MatchersProprios.*;
 public class LocacaoServiceTest {
 
     private LocacaoService locacaoService;
+    private SpcService spcService;
+    private LocacaoDAO locacaoDAO;
 
     @Rule
     public ErrorCollector error = new ErrorCollector();
@@ -36,7 +39,10 @@ public class LocacaoServiceTest {
     @Before
     public void setup(){
         locacaoService = new LocacaoService();
-        locacaoService.setLocacaoDAO(Mockito.mock(LocacaoDAO.class));
+        locacaoDAO = Mockito.mock(LocacaoDAO.class);
+        locacaoService.setLocacaoDAO(locacaoDAO);
+        spcService = Mockito.mock(SpcService.class);
+        locacaoService.setSpcService(spcService);
     }
 
     @Test
@@ -73,7 +79,7 @@ public class LocacaoServiceTest {
         //cenario
         List<Filme> filmes = List.of(umFilme().agora());
 
-        Assert.assertThrows("Usuário Vázio!", LocadoraException.class, () -> locacaoService.alugarFilme(null, filmes));
+        assertThrows("Usuário Vázio!", LocadoraException.class, () -> locacaoService.alugarFilme(null, filmes));
     }
 
     @Test
@@ -81,7 +87,7 @@ public class LocacaoServiceTest {
         //cenario
         Usuario usuario = umUsuario().agora();
 
-        Assert.assertThrows("Filme vázio!", LocadoraException.class, () -> locacaoService.alugarFilme(usuario, null));
+        assertThrows("Filme vázio!", LocadoraException.class, () -> locacaoService.alugarFilme(usuario, null));
     }
 
     @Test
@@ -99,6 +105,18 @@ public class LocacaoServiceTest {
 
         //verificacao
         assertThat(resultado.getDataRetorno(), caiEmUmaSegunda());
+    }
+
+    @Test
+    public void naoDeveAlugarFilmeParaNegativadoSpc(){
+        //cenario
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = List.of(umFilme().agora());
+        when(spcService.possuiNegativacao(usuario)).thenReturn(true);
+
+        //acao
+        assertThrows(LocadoraException.class,
+                () -> locacaoService.alugarFilme(usuario, filmes));
     }
 
 }

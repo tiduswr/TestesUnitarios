@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
 import tiduswr.daos.LocacaoDaoFake;
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
@@ -46,6 +47,8 @@ public class CalculoValorLocacaoTest {
     public void setup(){
         locacaoService = new LocacaoService();
         locacaoService.setLocacaoDAO(new LocacaoDaoFake());
+        SpcService spcService = Mockito.mock(SpcService.class);
+        locacaoService.setSpcService(spcService);
     }
 
     @Parameterized.Parameters(name = "{2}")
