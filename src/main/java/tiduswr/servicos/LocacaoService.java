@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import tiduswr.daos.LocacaoDAO;
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
 import tiduswr.entidades.Usuario;
@@ -12,7 +13,9 @@ import tiduswr.exceptions.LocadoraException;
 import tiduswr.utils.DataUtils;
 
 public class LocacaoService {
-	
+
+	private LocacaoDAO locacaoDAO;
+
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 
 		if(usuario == null) throw new LocadoraException("Usuário Vázio!");
@@ -54,7 +57,7 @@ public class LocacaoService {
 		locacao.setDataRetorno(dataEntrega);
 		
 		//Salvando a locacao...	
-		//TODO adicionar método para salvar
+		locacaoDAO.salvar(locacao);
 		
 		return locacao;
 	}
