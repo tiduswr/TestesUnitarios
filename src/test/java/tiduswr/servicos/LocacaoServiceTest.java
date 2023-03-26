@@ -3,6 +3,7 @@ package tiduswr.servicos;
 import org.junit.*;
 import org.junit.rules.ErrorCollector;
 import org.junit.runners.MethodSorters;
+import tiduswr.daos.LocacaoDaoFake;
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
 import tiduswr.entidades.Usuario;
@@ -33,6 +34,7 @@ public class LocacaoServiceTest {
     @Before
     public void setup(){
         locacaoService = new LocacaoService();
+        locacaoService.setLocacaoDAO(new LocacaoDaoFake());
     }
 
     @Test

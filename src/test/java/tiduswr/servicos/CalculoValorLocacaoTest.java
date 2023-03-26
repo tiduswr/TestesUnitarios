@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import tiduswr.daos.LocacaoDaoFake;
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
 import tiduswr.entidades.Usuario;
@@ -44,6 +45,7 @@ public class CalculoValorLocacaoTest {
     @Before
     public void setup(){
         locacaoService = new LocacaoService();
+        locacaoService.setLocacaoDAO(new LocacaoDaoFake());
     }
 
     @Parameterized.Parameters(name = "{2}")

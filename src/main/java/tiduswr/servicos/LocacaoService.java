@@ -62,7 +62,7 @@ public class LocacaoService {
 		return locacao;
 	}
 
-	public static void main(String[] args) {
-
+	public void setLocacaoDAO(LocacaoDAO locacaoDAO){
+		this.locacaoDAO = locacaoDAO;
 	}
 }
