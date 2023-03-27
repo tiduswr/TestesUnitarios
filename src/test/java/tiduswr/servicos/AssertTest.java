@@ -1,41 +1,42 @@
 package tiduswr.servicos;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tiduswr.entidades.Usuario;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AssertTest {
 
     @Test
     public void test(){
-        Assert.assertTrue(true);
-        Assert.assertFalse(false);
-        Assert.assertEquals("Erro de comparação", 1,1);
+        assertTrue(true);
+        assertFalse(false);
+        assertEquals(1,1, "Erro de comparação");
 
         //Exemplos float
-        Assert.assertEquals(0.51234,0.512, 0.001);
-        Assert.assertEquals(Math.PI, 3.14, 0.01);
+        assertEquals(0.51234,0.512, 0.001);
+        assertEquals(Math.PI, 3.14, 0.01);
 
         //Exemplos int
         int i = 5;
         Integer i2 = 5;
-        Assert.assertEquals(i, i2.intValue());
+        assertEquals(i, i2.intValue());
 
         //String
-        Assert.assertEquals("bola", "bola");
-        Assert.assertNotEquals("bola", "Bola");
-        Assert.assertTrue("bola".equalsIgnoreCase("Bola"));
-        Assert.assertTrue("bola".startsWith("bo"));
+        assertEquals("bola", "bola");
+        assertNotEquals("bola", "Bola");
+        assertTrue("bola".equalsIgnoreCase("Bola"));
+        assertTrue("bola".startsWith("bo"));
 
         Usuario u1 = new Usuario("HARLLEM");
         Usuario u2 = new Usuario("HARLLEM");
         Usuario u3 = null;
 
-        Assert.assertEquals(u1, u2);
-        Assert.assertSame(u1,u1);
-        Assert.assertNotSame(u1,u2);
-        Assert.assertNull(u3);
-        Assert.assertNotNull(u2);
+        assertEquals(u1, u2);
+        assertSame(u1,u1);
+        assertNotSame(u1,u2);
+        assertNull(u3);
+        assertNotNull(u2);
     }
 
 }

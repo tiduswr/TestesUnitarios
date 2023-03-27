@@ -1,9 +1,11 @@
 package tiduswr.servicos;
 
-import org.junit.*;
-import org.junit.rules.ErrorCollector;
-import org.junit.runners.MethodSorters;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import tiduswr.daos.LocacaoDAO;
 import tiduswr.entidades.Filme;
 import tiduswr.entidades.Locacao;
@@ -19,7 +21,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static tiduswr.builder.FilmeBuilder.umFilme;
 import static tiduswr.builder.FilmeBuilder.umFilmeSemEstoque;
@@ -27,34 +29,26 @@ import static tiduswr.builder.LocacaoBuilder.umaLocacao;
 import static tiduswr.builder.UsuarioBuilder.umUsuario;
 import static tiduswr.matchers.MatchersProprios.*;
 
-//Para definir ordem nos testes(Não recomendado pois quebra a letra I do principio FIRST)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+//Para definir ordem nos testes anote eles com @Order() e o valor index(ex: @Order(1))
+//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ExtendWith(MockitoExtension.class)
 public class LocacaoServiceTest {
 
+    @InjectMocks
     private LocacaoService locacaoService;
+
+    @Mock
     private SpcService spcService;
+    @Mock
     private LocacaoDAO locacaoDAO;
+    @Mock
     private EmailService emailService;
-
-    @Rule
-    public ErrorCollector error = new ErrorCollector();
-
-    @Before
-    public void setup(){
-        locacaoService = new LocacaoService();
-        locacaoDAO = mock(LocacaoDAO.class);
-        locacaoService.setLocacaoDAO(locacaoDAO);
-        spcService = mock(SpcService.class);
-        locacaoService.setSpcService(spcService);
-        emailService = mock(EmailService.class);
-        locacaoService.setEmailService(emailService);
-    }
 
     @Test
     //@Ignore
     public void deveAlugarFilme() throws Exception{
         //Não Executa no sbado
-        Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+        Assumptions.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
         //cenario
         Usuario usuario = umUsuario().agora();
@@ -64,19 +58,19 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
         //verificacao
-        error.checkThat(locacao.getValor(), is(equalTo(5.0)));
-        error.checkThat(locacao.getDataLocacao(), isHoje());
-        error.checkThat(locacao.getDataRetorno(), isHojePlusDays(1));
+        assertThat(locacao.getValor(), is(equalTo(5.0)));
+        assertThat(locacao.getDataLocacao(), isHoje());
+        assertThat(locacao.getDataRetorno(), isHojePlusDays(1));
     }
 
-    @Test(expected = FilmeSemEstoqueException.class)
+    @Test
     public void deveLancarExcecaoAoAlugarFilmeSemEstoque() throws Exception{
         //cenario
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(umFilmeSemEstoque().agora());
 
         //acao
-        locacaoService.alugarFilme(usuario, filmes);
+        assertThrows(FilmeSemEstoqueException.class, () -> locacaoService.alugarFilme(usuario, filmes));
     }
 
     @Test
@@ -84,7 +78,7 @@ public class LocacaoServiceTest {
         //cenario
         List<Filme> filmes = List.of(umFilme().agora());
 
-        assertThrows("Usuário Vázio!", LocadoraException.class, () -> locacaoService.alugarFilme(null, filmes));
+        assertThrows(LocadoraException.class, () -> locacaoService.alugarFilme(null, filmes), "Usuário Vázio!");
     }
 
     @Test
@@ -92,14 +86,14 @@ public class LocacaoServiceTest {
         //cenario
         Usuario usuario = umUsuario().agora();
 
-        assertThrows("Filme vázio!", LocadoraException.class, () -> locacaoService.alugarFilme(usuario, null));
+        assertThrows(LocadoraException.class, () -> locacaoService.alugarFilme(usuario, null), "Filme vázio!");
     }
 
     @Test
     //@Ignore
     public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
         //Só executa no sábado
-        Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+        Assumptions.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
         //cenario
         Usuario usuario = umUsuario().agora();

@@ -1,14 +1,15 @@
 package tiduswr.servicos;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tiduswr.exceptions.NaoPodeDividirPorZeroException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CalculadoraTest {
     private Calculadora calc;
 
-    @Before
+    @BeforeEach
     public void setup(){
         calc = new Calculadora();
     }
@@ -24,7 +25,7 @@ public class CalculadoraTest {
         int resultado = calc.somar(a,b);
 
         //Verificação
-        Assert.assertEquals(expected, resultado);
+        assertEquals(expected, resultado);
     }
 
     @Test
@@ -38,7 +39,7 @@ public class CalculadoraTest {
         int resultado = calc.subtracao(a,b);
 
         //Verificação
-        Assert.assertEquals(expected, resultado);
+        assertEquals(expected, resultado);
     }
 
     @Test
@@ -52,13 +53,13 @@ public class CalculadoraTest {
         int resultado = calc.dividir(a,b);
 
         //Verificação
-        Assert.assertEquals(expected, resultado);
+        assertEquals(expected, resultado);
     }
 
     @Test
     public void deveLancarExcecaoAoDividirPorZero(){
         //Verificação
-        Assert.assertThrows(NaoPodeDividirPorZeroException.class, () -> calc.dividir(3,0));
+        assertThrows(NaoPodeDividirPorZeroException.class, () -> calc.dividir(3,0));
     }
 
 }

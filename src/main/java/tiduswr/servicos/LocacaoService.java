@@ -75,16 +75,4 @@ public class LocacaoService {
 				.forEach(locacao -> emailService.notificarAtraso(locacao.getUsuario()));
 	}
 
-	public void setLocacaoDAO(LocacaoDAO locacaoDAO){
-		this.locacaoDAO = locacaoDAO;
-	}
-
-	public void setEmailService(EmailService emailService){
-		this.emailService = emailService;
-	}
-
-	public void setSpcService(SpcService spcService){
-		this.spcService = spcService;
-	}
-
 }
