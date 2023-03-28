@@ -27,8 +27,12 @@ public class LocacaoService {
 				.anyMatch(e -> e == 0);
 		if(anyFilmeWithoutEstoque)
 			throw new FilmeSemEstoqueException("Filme sem estoque!");
-		if(spcService.possuiNegativacao(usuario))
-			throw new LocadoraException("Usuario Negativado!");
+		try{
+			if(spcService.possuiNegativacao(usuario))
+				throw new LocadoraException("Usuario Negativado!");
+		}catch(Exception e){
+			throw new LocadoraException("Problemas com SPC, tente novamente");
+		}
 
 		Locacao locacao = new Locacao();
 		locacao.setFilmes(filmes);

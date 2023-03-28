@@ -93,7 +93,8 @@ public class LocacaoServiceTest {
     //@Ignore
     public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
         //Só executa no sábado
-        Assumptions.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+        Assumptions.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY),
+                () -> "deveDevolverNaSegundaAoAlugarNoSabado(): Falhou por nao ser sabado.");
 
         //cenario
         Usuario usuario = umUsuario().agora();
@@ -107,7 +108,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void naoDeveAlugarFilmeParaNegativadoSpc(){
+    public void naoDeveAlugarFilmeParaNegativadoSpc() throws Exception {
         //cenario
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(umFilme().agora());
@@ -152,6 +153,17 @@ public class LocacaoServiceTest {
 
         //Garantir que não usado o serviço abaixo(não tem haver com o código, é só uma curiosidade)
         verifyNoInteractions(spcService);
+    }
+
+    @Test
+    public void deveTratarErroSPC() throws Exception {
+        //cenario
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = List.of(umFilme().agora());
+        when(spcService.possuiNegativacao(usuario)).thenThrow(new Exception("Falha catastrófica"));
+
+        //acao
+        assertThrows(LocadoraException.class,() -> locacaoService.alugarFilme(usuario, filmes), "Problemas com SPC, tente novamente");
     }
 
 }
