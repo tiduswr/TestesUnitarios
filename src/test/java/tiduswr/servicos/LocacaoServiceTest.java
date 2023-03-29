@@ -3,6 +3,7 @@ package tiduswr.servicos;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,6 +22,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static tiduswr.builder.FilmeBuilder.umFilme;
@@ -58,9 +60,11 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
         //verificacao
-        assertThat(locacao.getValor(), is(equalTo(5.0)));
-        assertThat(locacao.getDataLocacao(), isHoje());
-        assertThat(locacao.getDataRetorno(), isHojePlusDays(1));
+        assertAll(
+                () -> assertThat(locacao.getValor(), is(equalTo(5.0))),
+                () -> assertThat(locacao.getDataLocacao(), isHoje()),
+                () -> assertThat(locacao.getDataRetorno(), isHojePlusDays(1))
+        );
     }
 
     @Test
@@ -164,6 +168,28 @@ public class LocacaoServiceTest {
 
         //acao
         assertThrows(LocadoraException.class,() -> locacaoService.alugarFilme(usuario, filmes), "Problemas com SPC, tente novamente");
+    }
+
+    @Test
+    public void deveProrrogarUmaLocacao(){
+        //cenario
+        final int DAYS = 3;
+        Locacao locacao = umaLocacao().agora();
+
+        //acao
+        locacaoService.prorrogarLocacao(locacao, DAYS);
+
+        //verificacao
+        ArgumentCaptor<Locacao> argCaptor = ArgumentCaptor.forClass(Locacao.class);
+        verify(locacaoDAO).salvar(argCaptor.capture());
+        Locacao locCaptured = argCaptor.getValue();
+
+        assertAll("Teste da nova Locacao",
+                () -> assertThat(locCaptured.getValor(), is(locacao.getValor() * DAYS)),
+                () -> assertThat(locCaptured.getDataLocacao(), isHoje()),
+                () -> assertThat(locCaptured.getDataRetorno(), isHojePlusDays(DAYS))
+        );
+
     }
 
 }

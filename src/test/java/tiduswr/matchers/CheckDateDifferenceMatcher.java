@@ -4,6 +4,8 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import tiduswr.utils.DataUtils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CheckDateDifferenceMatcher extends TypeSafeMatcher<Date> {
@@ -25,6 +27,7 @@ public class CheckDateDifferenceMatcher extends TypeSafeMatcher<Date> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText(CHECK_DATE.toString());
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        description.appendText(format.format(CHECK_DATE));
     }
 }

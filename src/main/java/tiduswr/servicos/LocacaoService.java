@@ -79,4 +79,14 @@ public class LocacaoService {
 				.forEach(locacao -> emailService.notificarAtraso(locacao.getUsuario()));
 	}
 
+	public void prorrogarLocacao(Locacao locacao, int dias){
+		Locacao locNew = new Locacao();
+		locNew.setUsuario(locacao.getUsuario());
+		locNew.setValor(locacao.getValor() * dias);
+		locNew.setFilmes(locacao.getFilmes());
+		locNew.setDataLocacao(new Date());
+		locNew.setDataRetorno(DataUtils.obterDataComDiferencaDias(dias));
+		locacaoDAO.salvar(locNew);
+	}
+
 }
