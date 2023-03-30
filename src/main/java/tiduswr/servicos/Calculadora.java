@@ -15,4 +15,9 @@ public class Calculadora {
         if(b == 0) throw new NaoPodeDividirPorZeroException("Não é possivel dividir por zero!");
         return a / b;
     }
+
+    public void imprime(){
+        System.out.println("Passei aqui");
+    }
+
 }
