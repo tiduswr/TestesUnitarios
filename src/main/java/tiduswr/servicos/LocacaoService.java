@@ -11,12 +11,14 @@ import tiduswr.entidades.Usuario;
 import tiduswr.exceptions.FilmeSemEstoqueException;
 import tiduswr.exceptions.LocadoraException;
 import tiduswr.utils.DataUtils;
+import tiduswr.utils.DateFactory;
 
 public class LocacaoService {
 
 	private LocacaoDAO locacaoDAO;
 	private SpcService spcService;
 	private EmailService emailService;
+	private DateFactory dateFactory;
 
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 
@@ -37,7 +39,7 @@ public class LocacaoService {
 		Locacao locacao = new Locacao();
 		locacao.setFilmes(filmes);
 		locacao.setUsuario(usuario);
-		locacao.setDataLocacao(new Date());
+		locacao.setDataLocacao(dateFactory.generateHoje());
 
 		double valorTotalLocacao = 0.0;
 		double descontoMaximo;
@@ -57,7 +59,7 @@ public class LocacaoService {
 		locacao.setValor(valorTotalLocacao);
 
 		//Entrega no dia util seguinte
-		Date dataEntrega = new Date();
+		Date dataEntrega = dateFactory.generateHoje();
 		dataEntrega = DataUtils.adicionarDias(dataEntrega, 1);
 		if(DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)){
 			dataEntrega = DataUtils.adicionarDias(dataEntrega,1);

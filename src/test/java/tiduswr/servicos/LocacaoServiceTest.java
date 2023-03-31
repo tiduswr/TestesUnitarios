@@ -14,6 +14,7 @@ import tiduswr.entidades.Usuario;
 import tiduswr.exceptions.FilmeSemEstoqueException;
 import tiduswr.exceptions.LocadoraException;
 import tiduswr.utils.DataUtils;
+import tiduswr.utils.DateFactory;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -45,6 +46,16 @@ public class LocacaoServiceTest {
     private LocacaoDAO locacaoDAO;
     @Mock
     private EmailService emailService;
+    @Mock
+    private DateFactory dateFactory;
+
+    @BeforeEach
+    public void setup(){
+        /*Lenient serve para definir um comportamento padrão para todos os testes
+        precisa ser usado pois ao definir um comportamento aqui o mockito vai entender
+        como se esse comportamento foi definido mas não usado, e lançara a exceção UnnecessaryStubbingException*/
+        lenient().when(dateFactory.generateHoje()).thenReturn(new Date());
+    }
 
     @Test
     //@Ignore
@@ -96,14 +107,10 @@ public class LocacaoServiceTest {
     @Test
     //@Ignore
     public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
-        //Só executa no sábado
-        Assumptions.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY),
-                () -> "deveDevolverNaSegundaAoAlugarNoSabado(): Falhou por nao ser sabado.");
-
         //cenario
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(umFilme().agora());
-
+        when(dateFactory.generateHoje()).thenReturn(DataUtils.obterData(1,4,2023));
         //acao
         Locacao resultado = locacaoService.alugarFilme(usuario, filmes);
 

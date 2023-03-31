@@ -1,5 +1,6 @@
 package tiduswr.servicos;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,12 +13,15 @@ import tiduswr.entidades.Locacao;
 import tiduswr.entidades.Usuario;
 import tiduswr.exceptions.FilmeSemEstoqueException;
 import tiduswr.exceptions.LocadoraException;
+import tiduswr.utils.DateFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.lenient;
 import static tiduswr.builder.FilmeBuilder.umFilme;
 import static tiduswr.builder.UsuarioBuilder.umUsuario;
 
@@ -30,6 +34,16 @@ public class CalculoValorLocacaoTest {
     private LocacaoDAO locacaoDAO;
     @Mock
     private SpcService spcService;
+    @Mock
+    private DateFactory dateFactory;
+
+    @BeforeEach
+    public void setup(){
+        /*Lenient serve para definir um comportamento padrão para todos os testes
+        precisa ser usado pois ao definir um comportamento aqui o mockito vai entender
+        como se esse comportamento foi definido mas não usado, e lançara a exceção UnnecessaryStubbingException*/
+        lenient().when(dateFactory.generateHoje()).thenReturn(new Date());
+    }
 
     @ParameterizedTest(name = "{2}")
     @MethodSource("getParametros")

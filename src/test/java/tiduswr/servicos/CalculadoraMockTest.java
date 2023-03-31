@@ -35,7 +35,7 @@ public class CalculadoraMockTest {
         //Nessa notação o método somar é executado antes do Mock
         //when(calcSpy.somar(1,8)).thenReturn(9);
         doReturn(9).when(calcSpy).somar(1,8);
-    
+
         //Mocando metóds void
         doNothing().when(calcSpy).imprime();
 
