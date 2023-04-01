@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tiduswr.daos.LocacaoDAO;
 import tiduswr.entidades.Filme;
@@ -14,8 +15,9 @@ import tiduswr.entidades.Usuario;
 import tiduswr.exceptions.FilmeSemEstoqueException;
 import tiduswr.exceptions.LocadoraException;
 import tiduswr.utils.DataUtils;
-import tiduswr.utils.DateFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +39,7 @@ import static tiduswr.matchers.MatchersProprios.*;
 @ExtendWith(MockitoExtension.class)
 public class LocacaoServiceTest {
 
-    @InjectMocks
+    @InjectMocks @Spy
     private LocacaoService locacaoService;
 
     @Mock
@@ -46,26 +48,16 @@ public class LocacaoServiceTest {
     private LocacaoDAO locacaoDAO;
     @Mock
     private EmailService emailService;
-    @Mock
-    private DateFactory dateFactory;
-
-    @BeforeEach
-    public void setup(){
-        /*Lenient serve para definir um comportamento padrão para todos os testes
-        precisa ser usado pois ao definir um comportamento aqui o mockito vai entender
-        como se esse comportamento foi definido mas não usado, e lançara a exceção UnnecessaryStubbingException*/
-        lenient().when(dateFactory.generateHoje()).thenReturn(new Date());
-    }
 
     @Test
     //@Ignore
     public void deveAlugarFilme() throws Exception{
-        //Não Executa no sbado
-        Assumptions.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
-
         //cenario
+        Date sampleDate = DataUtils.obterData(31,3,2023);
+        Date sampleDatePlusOneDay = DataUtils.adicionarDias(sampleDate, 1);
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(umFilme().comValor(5.0).agora());
+        doReturn(sampleDate).when(locacaoService).generateHoje();
 
         //acao
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
@@ -73,8 +65,8 @@ public class LocacaoServiceTest {
         //verificacao
         assertAll(
                 () -> assertThat(locacao.getValor(), is(equalTo(5.0))),
-                () -> assertThat(locacao.getDataLocacao(), isHoje()),
-                () -> assertThat(locacao.getDataRetorno(), isHojePlusDays(1))
+                () -> assertThat(locacao.getDataLocacao(), is(sampleDate)),
+                () -> assertThat(locacao.getDataRetorno(), is(sampleDatePlusOneDay))
         );
     }
 
@@ -108,9 +100,11 @@ public class LocacaoServiceTest {
     //@Ignore
     public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
         //cenario
+        Date algumSabado = DataUtils.obterData(1,4,2023);
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(umFilme().agora());
-        when(dateFactory.generateHoje()).thenReturn(DataUtils.obterData(1,4,2023));
+        doReturn(algumSabado).when(locacaoService).generateHoje();
+
         //acao
         Locacao resultado = locacaoService.alugarFilme(usuario, filmes);
 
@@ -197,6 +191,29 @@ public class LocacaoServiceTest {
                 () -> assertThat(locCaptured.getDataRetorno(), isHojePlusDays(DAYS))
         );
 
+    }
+
+    /*
+    Se um método é muito complexo para precisar de um teste, seria melhor
+    considerar extrai-lo para um servico ou classe separada e testa-lo
+    independentemente pois geralmente métodos privados são detalhes
+    especificos de implementação de uma classe, e ele ja deveria ser
+    testado na classe publica em que foi usado.
+     */
+    @Test
+    public void deveTestarMetodoPrivado() throws Exception {
+        //cenario
+        Double expectedValue = 4.0;
+        List<Filme> filmes = List.of(umFilme().agora());
+
+        //acao
+        Class<LocacaoService> clazz = LocacaoService.class;
+        Method metodo = clazz.getDeclaredMethod("calcularValorLocacao", List.class);
+        metodo.setAccessible(true);
+        Double valor = (Double) metodo.invoke(locacaoService, filmes);
+
+        //verificacao
+        assertThat(valor, is(expectedValue));
     }
 
 }

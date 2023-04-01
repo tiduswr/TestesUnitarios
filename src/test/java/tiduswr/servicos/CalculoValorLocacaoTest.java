@@ -1,11 +1,11 @@
 package tiduswr.servicos;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tiduswr.daos.LocacaoDAO;
 import tiduswr.entidades.Filme;
@@ -13,37 +13,26 @@ import tiduswr.entidades.Locacao;
 import tiduswr.entidades.Usuario;
 import tiduswr.exceptions.FilmeSemEstoqueException;
 import tiduswr.exceptions.LocadoraException;
-import tiduswr.utils.DateFactory;
+import tiduswr.utils.DataUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.doReturn;
 import static tiduswr.builder.FilmeBuilder.umFilme;
 import static tiduswr.builder.UsuarioBuilder.umUsuario;
 
 @ExtendWith(MockitoExtension.class)
 public class CalculoValorLocacaoTest {
 
-    @InjectMocks
+    @InjectMocks @Spy
     private LocacaoService locacaoService;
     @Mock
     private LocacaoDAO locacaoDAO;
     @Mock
     private SpcService spcService;
-    @Mock
-    private DateFactory dateFactory;
-
-    @BeforeEach
-    public void setup(){
-        /*Lenient serve para definir um comportamento padrão para todos os testes
-        precisa ser usado pois ao definir um comportamento aqui o mockito vai entender
-        como se esse comportamento foi definido mas não usado, e lançara a exceção UnnecessaryStubbingException*/
-        lenient().when(dateFactory.generateHoje()).thenReturn(new Date());
-    }
 
     @ParameterizedTest(name = "{2}")
     @MethodSource("getParametros")
@@ -51,6 +40,7 @@ public class CalculoValorLocacaoTest {
             throws FilmeSemEstoqueException, LocadoraException {
         //cenario
         Usuario usuario = umUsuario().agora();
+        doReturn(DataUtils.obterData(1,4,2023)).when(locacaoService).generateHoje();
 
         //acao
         Locacao resultado = locacaoService.alugarFilme(usuario, filmes);
