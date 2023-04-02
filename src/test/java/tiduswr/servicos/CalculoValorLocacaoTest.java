@@ -40,8 +40,9 @@ public class CalculoValorLocacaoTest {
     @ParameterizedTest(name = "{2}")
     @MethodSource("getParametros")
     void devePagarFilmeComDesconto(List<Filme> filmes, double valorLocacao, String testName)
-            throws FilmeSemEstoqueException, LocadoraException {
+            throws FilmeSemEstoqueException, LocadoraException, InterruptedException {
         //cenario
+        Thread.sleep(5000);
         Usuario usuario = umUsuario().agora();
         doReturn(DataUtils.obterData(1,4,2023)).when(locacaoService).generateHoje();
 
