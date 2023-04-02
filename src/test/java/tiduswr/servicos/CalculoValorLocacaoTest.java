@@ -1,6 +1,8 @@
 package tiduswr.servicos;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
@@ -25,6 +27,7 @@ import static tiduswr.builder.FilmeBuilder.umFilme;
 import static tiduswr.builder.UsuarioBuilder.umUsuario;
 
 @ExtendWith(MockitoExtension.class)
+@Execution(ExecutionMode.CONCURRENT)
 public class CalculoValorLocacaoTest {
 
     @InjectMocks @Spy

@@ -1,10 +1,13 @@
 package tiduswr.servicos;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import tiduswr.entidades.Usuario;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Execution(ExecutionMode.CONCURRENT)
 public class AssertTest {
 
     @Test

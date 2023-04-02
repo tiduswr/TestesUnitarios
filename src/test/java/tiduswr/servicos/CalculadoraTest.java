@@ -1,11 +1,14 @@
 package tiduswr.servicos;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import tiduswr.exceptions.NaoPodeDividirPorZeroException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Execution(ExecutionMode.CONCURRENT)
 public class CalculadoraTest {
     private Calculadora calc;
 

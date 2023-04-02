@@ -3,6 +3,8 @@ package tiduswr.servicos;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -37,6 +39,8 @@ import static tiduswr.matchers.MatchersProprios.*;
 //Para definir ordem nos testes anote eles com @Order() e o valor index(ex: @Order(1))
 //@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
+//Execução de testes em paralelo
+@Execution(ExecutionMode.CONCURRENT)
 public class LocacaoServiceTest {
 
     @InjectMocks @Spy
